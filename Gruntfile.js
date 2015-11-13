@@ -11,6 +11,19 @@ module.exports = function(grunt) {
             }
         }
     },
+    postcss: {
+      options: {
+        map: true,
+        processors: [
+          require('pixrem')(), // add fallbacks for rem units
+          require('autoprefixer')({browsers: 'last 2 versions'}), // add vendor prefixes
+          require('cssnano')() // minify the result
+        ]
+      },
+      dist: {
+        src: 'public/stylesheets/main.css'
+      }
+    },
     jade: {
       compile: {
         options: {
@@ -24,15 +37,17 @@ module.exports = function(grunt) {
       }
     },
     watch: {
-      files: ['views/*.jade', 'public/sass/*.sass'],
-      tasks: ['sass', 'jade']
+      files: ['public/sass/*.sass'],
+      tasks: ['css']
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-jade');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-postcss');
   grunt.loadNpmTasks('grunt-sass');
 
-  grunt.registerTask('default', ['watch']);
+  grunt.registerTask('css', ['sass', 'postcss']);
+  grunt.registerTask('default', ['css', 'watch']);
 
 };
